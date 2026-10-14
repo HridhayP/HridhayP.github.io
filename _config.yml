@@ -126,3 +126,5 @@ exclude:
   - "*.ipynb"
   - "python_notebooks/*"
   - vendor
+
+repository: HridhayP/HridhayP.github.io
