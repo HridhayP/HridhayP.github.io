@@ -1,11 +1,11 @@
 ---
-name: Where (and When) People See Bigfoot
+name: Bigfoot Sightings (BFRO)
 tools: [Python, Altair, vega-lite]
 image: /assets/pngs/bfro_map.png
-description: Interactive map and timeline of BFRO Bigfoot sighting reports, plus a state-by-season breakdown.
+description: HW5 - two Altair plots of the BFRO Bigfoot reports dataset
 ---
 
-# Where (and When) People See Bigfoot
+# Bigfoot Sightings (BFRO)
 
 <div class="left">
 <a class="m-1 btn btn-outline-primary btn-2 " href="https://raw.githubusercontent.com/UIUC-iSchool-DataViz/is445_data/main/bfro_reports_fall2022.csv">
@@ -18,24 +18,24 @@ description: Interactive map and timeline of BFRO Bigfoot sighting reports, plus
 </a>
 </div>
 
-This project looks at sighting reports collected by the Bigfoot Field Researchers Organization (BFRO), using the fall 2022 IS 445 copy of the dataset (4,747 reports).
+For this homework I used the BFRO Bigfoot reports dataset (4,747 reports).
 
-## Plot 1: Sightings across the US over time (interactive)
+## Plot 1: Map of sightings + timeline
 
 <vegachart schema-url="/assets/json/bfro_map.json" style="width: 100%"></vegachart>
 
-This plot shows where Bigfoot reports happened and when. The top panel is a map of every report that has coordinates and a date, from 1950 onward (3,780 reports). Each point sits at its `longitude` and `latitude`, which are both quantitative encodings, drawn on an Albers USA projection so that Alaska and Hawaii fit on the map. Points are colored by `classification`, a nominal encoding. Class A reports are clear sightings, Class B reports are things heard or glimpsed at a distance, and Class C reports are secondhand. I used the Dark2 categorical scheme because it is colorblind-friendly and gives each class a clearly different hue. The states are a light gray background so that the points stand out. The bottom panel is a bar chart of reports per year: `year` is a quantitative field binned into one-year bins, and the bar height is a quantitative `count()`.
+The top part is a map of where each sighting was reported, and the bottom part is a bar chart of how many reports there were each year. On the map, longitude and latitude are both quantitative and I used the albersUsa projection so Alaska and Hawaii show up. The dots are colored by classification, which is nominal (Class A is a clear sighting, Class B is something heard or seen from far away, Class C is secondhand). I used the Dark2 color scheme since it's a categorical scheme and the three colors are easy to tell apart. For the timeline, year is quantitative and binned by 1 year, and the bar height is the count of reports.
 
-For the data transformations, I parsed the `date` column into a datetime and extracted `year`. I dropped about 950 reports with no coordinates or date, and I dropped reports from before 1950, because a few 1800s reports stretched the timeline and made the years with most of the reports hard to read. I also removed one Washington report whose longitude (-167) put it in the middle of the Pacific Ocean, which is clearly a data-entry error. Finally, I kept only the columns the plots use and dropped the long free-text report columns, which keeps the embedded data small enough to load quickly on this page.
+For the data, I converted the date column to a datetime and pulled out the year. I dropped rows with no latitude/longitude or date, and only kept reports from 1950 on because a few really old reports made the timeline hard to read. That left 3,780 reports. I also dropped one Washington report with a longitude of -167, which put it in the ocean, so it was probably a typo. I only kept the columns I needed so the json file wasn't huge.
 
-## Plot 2: Top states by season
+## Plot 2: Top 15 states by season
 
 <vegachart schema-url="/assets/json/bfro_states.json" style="width: 100%"></vegachart>
 
-This plot shows the 15 states with the most reports, with each bar split by the season of the sighting. `state` is a nominal encoding on the y-axis, sorted by total reports so the ranking reads from top to bottom. The x-axis is the quantitative sum of reports. `season` is a nominal color encoding, and I chose colors that people already associate with the seasons (blue for winter, green for spring, orange for summer, brown for fall), so the legend is easy to remember. The segments are stacked in calendar order so the seasons line up across states. Washington leads by a wide margin with 553 reports, followed by California with 397 and Florida with 283. Every state peaks in summer or fall, and across all reports summer accounts for about 38% and fall for about 30%. That pattern fits with more people being outdoors hiking, camping, and hunting in those months.
+This is a stacked bar chart of the 15 states with the most reports, split up by season. State is nominal on the y axis, sorted by total reports. The x axis is the sum of reports, which is quantitative. Season is nominal and is the color. I picked colors that match the seasons (blue for winter, green for spring, orange for summer, brown for fall) so it's easy to read without looking at the legend much. Washington has by far the most reports (553), then California (397) and Florida (283). Most states have the most reports in summer or fall, which makes sense since that's when people are outside camping and hiking more.
 
-For this plot I used all reports, including the ones with no coordinates, because location on a map isn't needed here. I dropped the 91 reports with an `Unknown` season, counted reports for each state and season combination with a pandas `groupby`, and kept only the 15 states with the most reports so the chart stays readable.
+For the data, I used all the reports here since this plot doesn't need coordinates. I removed reports where the season was "Unknown", then used a groupby to count reports for each state and season, and kept the top 15 states.
 
 ## Interactivity
 
-Plot 1 has two linked interactions. First, you can click and drag across the timeline to select a range of years, and the map filters to show only reports from those years. Second, you can click a class in the legend to highlight only that class on the map; the timeline then updates to count only that class (shift-click to select more than one class). Together these let you ask questions that a single static map can't answer. Brushing 2002–2006 shows that the reporting boom around 2004 (241 reports, the peak year) happened across the whole country, with reports from 46 states, not in one hotspot. Isolating Class A shows that clear sightings aren't only a Pacific Northwest story: Washington has the most Class A reports, but Ohio, Florida, and Texas each have more than 100. The map alone shows only where reports happened; the brush adds when, and the legend filter adds how credible each report is.
+The interactivity is in Plot 1. You can click and drag on the timeline to select a range of years and the map will only show reports from those years. You can also click a class in the legend to only show that class (shift click to pick more than one), and the timeline updates to match. I added this because the map by itself only shows where sightings happened, and with the brush you can also see when they happened. For example, if you select the early 2000s you can see the jump in reports around 2004 was spread out across the whole country.
